@@ -12,8 +12,11 @@ import SwiftData
 struct speezaApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            TextNote.self,
+            NoteGroup.self,
+            LanguagePreference.self
         ])
+        
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
         do {
