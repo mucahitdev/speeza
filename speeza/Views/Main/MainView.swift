@@ -22,7 +22,7 @@ struct MainView: View {
     @State private var groupToRename: NoteGroup? = nil
     @State private var renameGroupName: String = ""
     
-    // Klavye odağını takip etmek için FocusState ekleyelim
+    // Track keyboard focus
     @FocusState private var isTextEditorFocused: Bool
     
     var body: some View {
@@ -32,13 +32,10 @@ struct MainView: View {
                     noteDetailsSection
                     voiceSettingsSection
                     groupSection
-                    actionButtonsSection
                 }
+                actionButtonsSection
             }
             .navigationTitle("Text to Speech")
-            .toolbar {
-                // Burada başka toolbar öğeleri olabilir, ancak klavye toolbar'ını kaldırıyoruz
-            }
             .onAppear {
                 viewModel.loadVoiceOptions(preferences: languagePreferences)
                 viewModel.loadGroups(groups: groups)
@@ -58,81 +55,81 @@ struct MainView: View {
                 
                 Button("Add") {
                     if !newGroupName.isEmpty {
-                        viewModel.createGroup(name: newGroupName, modelContext: modelContext)
+                        viewModel
+                            .createGroup(
+                                name: newGroupName,
+                                modelContext: modelContext
+                            )
                         newGroupName = ""
                     }
                 }
             } message: {
                 Text("Enter a name for the new group")
             }
-            .alert("Rename Group", isPresented: $showingRenameGroup) {
-                TextField("Group Name", text: $renameGroupName)
-                
-                Button("Cancel", role: .cancel) {
-                    renameGroupName = ""
-                    groupToRename = nil
-                }
-                
-                Button("Rename") {
-                    if let group = groupToRename, !renameGroupName.isEmpty {
-                        viewModel.renameGroup(group: group, newName: renameGroupName)
-                        try? modelContext.save()
-                        renameGroupName = ""
-                        groupToRename = nil
-                    }
-                }
-            } message: {
-                Text("Enter a new name for the group")
-            }
         }
     }
     
     // MARK: - UI Components
     
-    // Not detayları bölümü
+    // Note Details Section
     private var noteDetailsSection: some View {
         Section(header: Text("Note Details")) {
-            TextField("Title", text: $viewModel.title)
-            
-            TextEditor(text: $viewModel.text)
-                .frame(minHeight: 100)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-                )
-                .focused($isTextEditorFocused)
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        if isTextEditorFocused {
-                            Spacer() // Sağa yaslamak için spacer ekleyelim
-                            
-                            Button("Done") {
-                                isTextEditorFocused = false // Klavyeyi kapat
+            ZStack(alignment: .topLeading) {
+                if viewModel.text.isEmpty {
+                    Text("Enter your note here")
+                        .foregroundColor(.gray)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 12)
+                }
+                        
+                TextEditor(text: $viewModel.text)
+                    .frame(minHeight: 40)
+                    .focused($isTextEditorFocused)
+                    .toolbar {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            if isTextEditorFocused {
+                                Spacer()
+                                
+                                Button("Done") {
+                                    isTextEditorFocused = false // Hide keyboard
+                                }
                             }
                         }
                     }
-                }
+            }
+            .frame(minHeight: 40)
+       
+            TextField("Title", text: $viewModel.title)
         }
     }
     
-    // Ses ayarları bölümü
+    // Voice Settings Section
     private var voiceSettingsSection: some View {
-        Section(header: Text("Voice Settings")) {
-            // Dil seçimi
+        Section(
+            header: Text("Voice Settings"),
+            footer: Group {
+                if viewModel.rate < 0.4 || viewModel.rate > 0.6 {
+                    Text("For a more natural speech experience, we recommend keeping the rate between 4 and 6")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
+            }
+        ) {
             languagePicker
             
-            // Ses seçimi
             voicePicker
             
-            // Hız ayarı
-            VStack {
-                Text("Speech Rate: \(viewModel.rate, specifier: "%.2f")")
-                Slider(value: $viewModel.rate, in: 0.1...1.0, step: 0.05)
-            }
+            SZSlider(
+                value: $viewModel.rate,
+                range: 0.1...1,
+                step: 0.1,
+                title: "Speech Rate: \(Int(viewModel.rate * 10))"
+            )
+            .padding(.vertical, 8)
         }
     }
     
-    // Dil seçimi picker'ı
+    // Language Picker
     private var languagePicker: some View {
         Picker("Language", selection: $viewModel.selectedLanguage) {
             ForEach(viewModel.getEnabledLanguages(), id: \.self) { language in
@@ -145,7 +142,7 @@ struct MainView: View {
         }
     }
     
-    // Ses seçimi picker'ı
+    // Voice Picker
     private var voicePicker: some View {
         Group {
             if let voices = viewModel.languageToVoicesMap[viewModel.selectedLanguage], !voices.isEmpty {
@@ -159,14 +156,14 @@ struct MainView: View {
         }
     }
     
-    // Grup bölümü
+    // Group Section
     private var groupSection: some View {
         Section(header: groupSectionHeader) {
             groupPicker
         }
     }
     
-    // Grup bölümü başlığı
+    // Group Section Header
     private var groupSectionHeader: some View {
         HStack {
             Text("Group")
@@ -180,81 +177,64 @@ struct MainView: View {
         }
     }
     
-    // Grup seçimi picker'ı
+    // Group Picker
     private var groupPicker: some View {
         Picker("Group", selection: $viewModel.selectedGroupID) {
             Text("Uncategorized").tag(nil as UUID?)
             
             ForEach(groups) { group in
-                groupPickerRow(for: group)
+                Text(group.name).tag(group.id as UUID?)
             }
         }
     }
     
-    // Grup seçimi satırı
-    private func groupPickerRow(for group: NoteGroup) -> some View {
-        Text(group.name).tag(group.id as UUID?)
-            .contextMenu {
-                Button(action: {
-                    showRenameGroup(group: group)
-                }) {
-                    Label("Rename", systemImage: "pencil")
-                }
-                
-                Button(role: .destructive, action: {
-                    viewModel.deleteGroup(group: group, modelContext: modelContext)
-                }) {
-                    Label("Delete", systemImage: "trash")
-                }
-            }
-    }
-    
-    // Aksiyon butonları bölümü
+    // Action Buttons Section
     private var actionButtonsSection: some View {
-        Section {
-            HStack {
-                Spacer()
-                playButton
-                Spacer()
-                saveButton
-                Spacer()
-            }
+        HStack {
+            Spacer()
+            playButton
+            Spacer()
+            saveButton
+            Spacer()
         }
+        .padding(.bottom, 8)
     }
     
-    // Oynat/Durdur butonu
+    // Play&Stop Button
     private var playButton: some View {
-        Button(action: {
-            viewModel.speak()
-        }) {
-            Label(viewModel.isPlaying ? "Stop" : "Play", systemImage: viewModel.isPlaying ? "stop.fill" : "play.fill")
-        }
-        .buttonStyle(.borderedProminent)
+        SZButton(
+            title: viewModel.isPlaying ? "Stop" : "Play",
+            icon: viewModel.isPlaying ? "stop.fill" : "play.fill",
+            action: { viewModel.speak() }
+        )
     }
     
-    // Kaydet butonu
+    // Save Button
     private var saveButton: some View {
-        Button(action: {
-            viewModel.saveNote(modelContext: modelContext)
-            viewModel.text = ""
-            viewModel.title = ""
-        }) {
-            Label("Save", systemImage: "square.and.arrow.down")
-        }
-        .buttonStyle(.borderedProminent)
+        SZButton(
+            title: "Save",
+            icon: "square.and.arrow.down",
+            action: {
+                viewModel.saveNote(modelContext: modelContext)
+                viewModel.text = ""
+                viewModel.title = ""
+            }
+        )
     }
     
-    // Grup adını değiştirme işlemini başlat
+    // Start renaming group
     func showRenameGroup(group: NoteGroup) {
         groupToRename = group
         renameGroupName = group.name
         showingRenameGroup = true
     }
     
-    // Dil kodundan dil adını elde etmek için yardımcı fonksiyon
+    // Get language name from language code
     func getLanguageName(for languageCode: String) -> String {
         let locale = Locale(identifier: languageCode)
-        if let languageName = locale.localizedString(forLanguageCode: languageCode) {
+        if let languageName = locale.localizedString(
+            forLanguageCode: languageCode
+        ) {
             return "\(languageName) (\(languageCode))"
         }
         return languageCode
