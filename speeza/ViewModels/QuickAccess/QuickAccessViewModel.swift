@@ -26,10 +26,12 @@ class QuickAccessViewModel: ObservableObject {
     }
     
     func speakNote(note: TextNote) {
+       
         if speechSynthesizer.isSpeaking {
+            print("Stopping current speech")
             speechSynthesizer.stopSpeaking(at: .immediate)
         }
-        
+    
         let utterance = AVSpeechUtterance(string: note.text)
         
         // Kaydedilen ses adına göre AVSpeechSynthesisVoice nesnesini bul
@@ -55,4 +57,4 @@ class QuickAccessViewModel: ObservableObject {
             speechSynthesizer.stopSpeaking(at: .immediate)
         }
     }
-} 
+}

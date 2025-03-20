@@ -17,8 +17,10 @@ struct NoteItemView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(note.title)
-                .font(.headline)
+            if !note.title.isEmpty {
+                Text(note.title)
+                    .font(.headline)
+            }
             
             Text(note.text)
                 .font(.subheadline)
@@ -49,4 +51,4 @@ struct NoteItemView: View {
             }
         }
     }
-} 
+}
