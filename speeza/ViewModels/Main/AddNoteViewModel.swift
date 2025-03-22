@@ -1,5 +1,5 @@
 //
-//  MainViewModel.swift
+//  AddNoteViewModel.swift
 //  speeza
 //
 //  Created by Mücahit Kökdemir NTT on 3.03.2025.
@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 import AVFoundation
 
-class MainViewModel: ObservableObject {
+class AddNoteViewModel: ObservableObject {
     @Published var text: String = ""
     @Published var title: String = ""
     @Published var selectedLanguage: String = "en-US"

@@ -1,5 +1,5 @@
 //
-//  MainView.swift
+//  AddNoteView.swift
 //  speeza
 //
 //  Created by Mücahit Kökdemir NTT on 3.03.2025.
@@ -9,13 +9,13 @@ import SwiftUI
 import SwiftData
 import AVFoundation
 
-struct MainView: View {
+struct AddNoteView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var notes: [TextNote]
     @Query private var groups: [NoteGroup]
     @Query(sort: \LanguagePreference.createdAt) private var languagePreferences: [LanguagePreference]
     
-    @StateObject private var viewModel = MainViewModel()
+    @StateObject private var viewModel = AddNoteViewModel()
     @State private var newGroupName: String = ""
     @State private var showingAddGroup: Bool = false
     @State private var showingRenameGroup: Bool = false
@@ -35,7 +35,7 @@ struct MainView: View {
                 }
                 actionButtonsSection
             }
-            .navigationTitle("Text to Speech")
+            .navigationTitle("Add Note")
             .onAppear {
                 viewModel.loadVoiceOptions(preferences: languagePreferences)
                 viewModel.loadGroups(groups: groups)

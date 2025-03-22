@@ -14,9 +14,9 @@ struct ContentView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            MainView()
+            AddNoteView()
                 .tabItem {
-                    Label("Text to Speech", systemImage: "text.bubble")
+                    Label("Add Note", systemImage: "text.bubble")
                 }
                 .tag(0)
             
