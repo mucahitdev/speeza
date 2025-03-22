@@ -14,6 +14,8 @@ struct GroupDetailView: View {
     
     @Environment(\.modelContext) private var modelContext
     @Query private var notes: [TextNote]
+    @Binding var selectedTab: TabScreens
+    @Binding var selectedNoteId: UUID?
     
     var filteredNotes: [TextNote] {
         return notes.filter { $0.groupID == group.id }
@@ -22,7 +24,7 @@ struct GroupDetailView: View {
     var body: some View {
         List {
             ForEach(filteredNotes) { note in
-                NoteItemView(note: note, onDelete: deleteNote)
+                NoteItemView(note: note, onDelete: deleteNote, selectedTab: $selectedTab, selectedNoteId: $selectedNoteId)
             }
         }
         .navigationTitle(group.name)

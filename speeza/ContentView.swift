@@ -9,28 +9,33 @@ import SwiftUI
 import SwiftData
 import AVFoundation
 
+enum TabScreens: Int {
+    case main, quickAccess, settings
+}
+
 struct ContentView: View {
-    @State private var selectedTab = 1
+    @State private var selectedTab:TabScreens = .main
+    @State private var selectedNoteId: UUID? = nil
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            MainView()
+            MainView(selectedNoteId: $selectedNoteId)
                 .tabItem {
                     Label("Text to Speech", systemImage: "text.bubble")
                 }
-                .tag(0)
+                .tag(TabScreens.main)
             
-            QuickAccessView()
+            QuickAccessView(selectedTab: $selectedTab, selectedNoteId: $selectedNoteId)
                 .tabItem {
                     Label("Quick Access", systemImage: "bolt")
                 }
-                .tag(1)
+                .tag(TabScreens.quickAccess)
             
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }
-                .tag(2)
+                .tag(TabScreens.settings)
         }
     }
 }

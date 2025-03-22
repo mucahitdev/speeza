@@ -14,6 +14,8 @@ struct NoteItemView: View {
     var onDelete: (TextNote) -> Void
     
     @StateObject private var viewModel = QuickAccessViewModel()
+    @Binding var selectedTab: TabScreens
+    @Binding var selectedNoteId: UUID?
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -50,5 +52,16 @@ struct NoteItemView: View {
                 Label("Delete", systemImage: "trash")
             }
         }
+        .swipeActions(edge: .leading) {
+            Button {
+                selectedTab = .main
+                selectedNoteId = note.id
+            } label: {
+                Label("Edit", systemImage: "pencil")
+                    .background(Color("szPrimaryColor"))
+            }
+        }
+            
+            
     }
 }
