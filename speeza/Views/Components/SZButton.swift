@@ -10,12 +10,9 @@ import SwiftUI
 struct SZButton: View {
     let title: String
     let icon: String
-    var isDisabled = false
-    var backgroundColor: Color = Color("szPrimaryColor")
+    let action: () -> Void
     var width: CGFloat = 120
     var height: CGFloat = 40
-    let action: () -> Void
-
     
     var body: some View {
         Button(action: action) {
@@ -25,11 +22,10 @@ struct SZButton: View {
                     .fontWeight(.bold)
             }
             .frame(width: width, height: height)
-            .background(isDisabled ? Color.gray : backgroundColor)
+            .background(Color("szPrimaryColor"))
             .foregroundColor(.white)
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
-        .disabled(isDisabled)
     }
 }
 
@@ -44,8 +40,8 @@ struct SZButton: View {
         SZButton(
             title: "Save",
             icon: "square.and.arrow.down",
-            width: 150,
-            action: {}
+            action: {},
+            width: 150
         )
     }
     .padding()

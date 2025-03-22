@@ -22,9 +22,6 @@ struct QuickAccessView: View {
     @State private var showingDeleteConfirmation: Bool = false
     @State private var groupToDelete: NoteGroup? = nil
     
-    @Binding var selectedTab: TabScreens
-    @Binding var selectedNoteId: UUID?
-    
     var body: some View {
         NavigationView {
             VStack {
@@ -38,12 +35,12 @@ struct QuickAccessView: View {
                     List {
                         Section(header: Text("Recent Notes")) {
                             ForEach(viewModel.recentNotes) { note in
-                                NoteItemView(note: note, onDelete: deleteNote, selectedTab: $selectedTab, selectedNoteId: $selectedNoteId)
+                                NoteItemView(note: note, onDelete: deleteNote)
                             }
                         }
-                            
+                        
                         Section(header: Text("Groups")) {
-                            NavigationLink(destination: UncategorizedNotesView(selectedTab: $selectedTab, selectedNoteId: $selectedNoteId)) {
+                            NavigationLink(destination: UncategorizedNotesView()) {
                                 HStack {
                                     Image(systemName: "tray")
                                         .foregroundColor(.gray)
@@ -52,7 +49,7 @@ struct QuickAccessView: View {
                             }
                             
                             ForEach(groups) { group in
-                                NavigationLink(destination: GroupDetailView(group: group, selectedTab: $selectedTab, selectedNoteId: $selectedNoteId)) {
+                                NavigationLink(destination: GroupDetailView(group: group)) {
                                     HStack {
                                         Image(systemName: "folder")
                                             .foregroundColor(.blue)

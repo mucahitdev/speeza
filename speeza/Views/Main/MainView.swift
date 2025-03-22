@@ -22,26 +22,8 @@ struct MainView: View {
     @State private var groupToRename: NoteGroup? = nil
     @State private var renameGroupName: String = ""
     
-    @Binding var selectedNoteId: UUID?
-    
     // Track keyboard focus
     @FocusState private var isTextEditorFocused: Bool
-    
-    var navigationTitle: String {
-        if let id = selectedNoteId {
-            return "Edit Note"
-        } else {
-            return "New Note"
-        }
-    }
-    
-    var saveButtonTitle: String {
-        if selectedNoteId != nil {
-            return "Update"
-        } else {
-            return "Save"
-        }
-    }
     
     var body: some View {
         NavigationView {
@@ -50,39 +32,13 @@ struct MainView: View {
                     noteDetailsSection
                     voiceSettingsSection
                     groupSection
-                    
-                    // Clear Form Button
-                    Section {
-                        Button(action: {
-                            viewModel.resetForm()
-                        }) {
-                            HStack {
-                                Spacer()
-                                Image(systemName: "trash")
-                                    .foregroundColor(.red)
-                                Text("Clear Form")
-                                    .foregroundColor(.red)
-                                Spacer()
-                            }
-                        }
-                    }
                 }
                 actionButtonsSection
             }
-            .navigationTitle(navigationTitle)
+            .navigationTitle("Text to Speech")
             .onAppear {
                 viewModel.loadVoiceOptions(preferences: languagePreferences)
                 viewModel.loadGroups(groups: groups)
-                if let id = selectedNoteId {
-                    viewModel.loadNote(by: id, from: notes)
-                }
-            }
-            .onChange(of: selectedNoteId) { _, newId in
-                if let id = newId {
-                    viewModel.loadNote(by: id, from: notes)
-                } else {
-                    viewModel.resetForm()
-                }
             }
             .onChange(of: languagePreferences) { _, newPreferences in
                 viewModel.loadVoiceOptions(preferences: newPreferences)
@@ -153,11 +109,9 @@ struct MainView: View {
             header: Text("Voice Settings"),
             footer: Group {
                 if viewModel.rate < 0.4 || viewModel.rate > 0.6 {
-                    Text(
-                        "For a more natural speech experience, we recommend keeping the rate between 4 and 6"
-                    )
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
+                    Text("For a more natural speech experience, we recommend keeping the rate between 4 and 6")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
                 }
             }
         ) {
@@ -240,19 +194,6 @@ struct MainView: View {
             Spacer()
             playButton
             Spacer()
-            
-            if let id = selectedNoteId,
-               let note = notes.first(where: { $0.id == id }),
-               viewModel.hasChanges(comparedTo: note) {
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    revertButton
-                        .transition(
-                            .scale.combined(with: .opacity)
-                        ) // Animasyonlu giriş efekti
-                }
-                Spacer()
-            }
-            
             saveButton
             Spacer()
         }
@@ -264,61 +205,21 @@ struct MainView: View {
         SZButton(
             title: viewModel.isPlaying ? "Stop" : "Play",
             icon: viewModel.isPlaying ? "stop.fill" : "play.fill",
-            isDisabled: viewModel.text.isEmptyOrWhitespace,
             action: { viewModel.speak() }
-        )
-    }
-    
-    // Revert Button
-    private var revertButton: some View {
-        SZButton(
-            title: "Revert",
-            icon: "arrow.uturn.backward",
-            action: {
-                if let id = selectedNoteId,
-                   let note = notes.first(where: { $0.id == id }) {
-                    withAnimation {
-                        viewModel.revertChanges(from: note)
-                    }
-                }
-            }
         )
     }
     
     // Save Button
     private var saveButton: some View {
         SZButton(
-            title: saveButtonTitle,
+            title: "Save",
             icon: "square.and.arrow.down",
-            isDisabled: isSaveButtonDisabled,
             action: {
-                if let id = selectedNoteId {
-                    viewModel
-                        .updateNote(
-                            id: id,
-                            modelContext: modelContext,
-                            notes: notes
-                        )
-                } else {
-                    viewModel.saveNote(modelContext: modelContext)
-                }
-                viewModel.resetForm()
-                selectedNoteId = nil
+                viewModel.saveNote(modelContext: modelContext)
+                viewModel.text = ""
+                viewModel.title = ""
             }
         )
-    }
-    
-    private var isSaveButtonDisabled: Bool {
-        if viewModel.text.isEmptyOrWhitespace {
-            return true
-        }
-        
-        if let id = selectedNoteId,
-           let note = notes.first(where: { $0.id == id }) {
-            return !viewModel.hasChanges(comparedTo: note)
-        }
-        
-        return false
     }
     
     // Start renaming group
