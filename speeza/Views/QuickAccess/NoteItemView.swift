@@ -14,41 +14,55 @@ struct NoteItemView: View {
     var onDelete: (TextNote) -> Void
     
     @StateObject private var viewModel = QuickAccessViewModel()
+    @State private var showingEditSheet = false
     
     var body: some View {
-        VStack(alignment: .leading) {
-            if !note.title.isEmpty {
-                Text(note.title)
-                    .font(.headline)
-            }
-            
-            Text(note.text)
-                .font(.subheadline)
-                .lineLimit(2)
-                .foregroundColor(.secondary)
-            
-            HStack {
-                Text("Language: \(note.language)")
-                    .font(.caption)
+        VStack {
+            VStack(alignment: .leading) {
+                if !note.title.isEmpty {
+                    Text(note.title)
+                        .font(.headline)
+                }
+                
+                Text(note.text)
+                    .font(.subheadline)
+                    .lineLimit(2)
                     .foregroundColor(.secondary)
                 
-                Spacer()
-                
-                Button(action: {
-                    viewModel.speakNote(note: note)
-                }) {
-                    Image(systemName: "play.circle.fill")
-                        .foregroundColor(.blue)
+                HStack {
+                    Text("Language: \(note.language)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        viewModel.speakNote(note: note)
+                    }) {
+                        Image(systemName: "play.circle.fill")
+                            .foregroundColor(.blue)
+                    }
                 }
             }
-        }
-        .padding(.vertical, 4)
-        .swipeActions(edge: .trailing) {
-            Button(role: .destructive) {
-                onDelete(note)
-            } label: {
-                Label("Delete", systemImage: "trash")
+            .padding(.vertical, 4)
+            .swipeActions(edge: .trailing) {
+                Button(role: .destructive) {
+                    onDelete(note)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
             }
+            .swipeActions(edge: .leading) {
+                Button {
+                    showingEditSheet = true
+                } label: {
+                    Label("Edit", systemImage: "pencil")
+                }
+                .tint(.blue)
+            }
+        }
+        .sheet(isPresented: $showingEditSheet) {
+            EditNoteView(note: note)
         }
     }
 }

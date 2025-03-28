@@ -9,8 +9,13 @@ import SwiftUI
 import SwiftData
 import AVFoundation
 
+enum TabScreens: Int {
+    case addNote, quickAccess, settings
+}
+    
+
 struct ContentView: View {
-    @State private var selectedTab = 1
+    @State private var selectedTab: TabScreens = .quickAccess
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -18,19 +23,19 @@ struct ContentView: View {
                 .tabItem {
                     Label("Add Note", systemImage: "text.bubble")
                 }
-                .tag(0)
+                .tag(TabScreens.addNote)
             
             QuickAccessView()
                 .tabItem {
                     Label("Quick Access", systemImage: "bolt")
                 }
-                .tag(1)
+                .tag(TabScreens.quickAccess)
             
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }
-                .tag(2)
+                .tag(TabScreens.settings)
         }
     }
 }
