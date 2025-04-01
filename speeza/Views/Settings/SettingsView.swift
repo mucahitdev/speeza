@@ -10,16 +10,12 @@ import SwiftData
 import AVFoundation
 
 struct SettingsView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query(sort: \LanguagePreference.createdAt) private var languagePreferences: [LanguagePreference]
-    
-    @StateObject private var viewModel = SettingsViewModel()
-    
+    @AppStorage("isIntroCompleted") private var isIntroCompleted: Bool = false
+
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section(header: Text("Voice Settings")) {
-                
                     NavigationLink(destination: VoiceSettingsView()) {
                         VStack {
                             HStack {
@@ -29,30 +25,30 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section(header: Text("About")) {
-                    HStack {
-                        Text("Version")
-                        Spacer()
-                        Text("1.0.0")
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    HStack {
-                        Text("Developer")
-                        Spacer()
-                        Text("Mücahit Kökdemir")
-                            .foregroundColor(.secondary)
+                //                Section(header: Text("About")) {
+                //                   
+                //                }
+                
+                HStack(alignment: .center) {
+                    Button {
+                        isIntroCompleted = false
+                    } label: {
+                        Label(
+                            "Reset Intro",
+                            systemImage: "arrow.counterclockwise"
+                        )
                     }
                 }
+                .hSpacing(.center)
+                
             }
+            
             .navigationTitle("Settings")
-            .onAppear {
-                viewModel.loadAvailableLanguages()
-                viewModel.loadLanguagePreferences(preferences: languagePreferences)
-            }
-            .onChange(of: languagePreferences) { _, newPreferences in
-                viewModel.loadLanguagePreferences(preferences: newPreferences)
-            }
+        
         }
     }
 } 
+
+#Preview {
+    SettingsView()
+}
