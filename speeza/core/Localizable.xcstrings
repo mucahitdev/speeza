@@ -52,6 +52,22 @@
         }
       }
     },
+    "APP_INFO" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Information"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uygulama Bilgisi"
+          }
+        }
+      }
+    },
     "AVAILABLE_LANGUAGES" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -86,6 +102,22 @@
         }
       }
     },
+    "BUILD" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Build"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Derleme"
+          }
+        }
+      }
+    },
     "CANCEL" : {
       "localizations" : {
         "en" : {
@@ -98,6 +130,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "İptal"
+          }
+        }
+      }
+    },
+    "CONTACT_US" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contact Us"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bizimle İletişime Geçin"
           }
         }
       }
@@ -584,6 +632,22 @@
         }
       }
     },
+    "RATE_APP" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rate App"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uygulamayı Değerlendir"
+          }
+        }
+      }
+    },
     "RECENT_NOTES" : {
       "localizations" : {
         "en" : {
@@ -718,6 +782,23 @@
         }
       }
     },
+    "SHARE_APP" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share App"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uygulamayı Paylaş"
+          }
+        }
+      }
+    },
     "STOP" : {
       "localizations" : {
         "en" : {
@@ -730,6 +811,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Durdur"
+          }
+        }
+      }
+    },
+    "SUPPORT" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Support"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Destek"
           }
         }
       }
@@ -794,6 +891,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Güncelle"
+          }
+        }
+      }
+    },
+    "VERSION" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versiyon"
           }
         }
       }
