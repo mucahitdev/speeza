@@ -23,7 +23,7 @@ struct UncategorizedNotesView: View {
                 NoteItemView(note: note, onDelete: deleteNote)
             }
         }
-        .navigationTitle("Uncategorized Notes")
+        .navigationTitle("UNCATEGORIZED_NOTES")
     }
     
     private func deleteNote(_ note: TextNote) {

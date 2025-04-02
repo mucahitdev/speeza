@@ -15,11 +15,11 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section(header: Text("Voice Settings")) {
+                Section(header: Text("VOICE_SETTINGS")) {
                     NavigationLink(destination: VoiceSettingsView()) {
                         VStack {
                             HStack {
-                                Text("Voice & Language Settings")
+                                Text("VOICE_LANGUAGE_SETTINGS")
                             }
                         }
                     }
@@ -43,7 +43,7 @@ struct SettingsView: View {
                 
             }
             
-            .navigationTitle("Settings")
+            .navigationTitle("SETTINGS")
         
         }
     }

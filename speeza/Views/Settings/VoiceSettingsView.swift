@@ -17,11 +17,11 @@ struct VoiceSettingsView: View {
     
     var body: some View {
         Form {
-            Section(header: Text("Voice Settings")) {
-                Text("Available Languages: \(viewModel.availableLanguages.count)")
+            Section(header: Text("VOICE_SETTINGS")) {
+                Text("AVAILABLE_LANGUAGES".localized(with: viewModel.availableLanguages.count))
                 
                 // Dil seçimi
-                Picker("Language", selection: $viewModel.selectedLanguage) {
+                Picker("LANGUAGE", selection: $viewModel.selectedLanguage) {
                     ForEach(viewModel.availableLanguages, id: \.self) { language in
                         Text(getLanguageName(for: language))
                             .tag(language)
@@ -33,29 +33,19 @@ struct VoiceSettingsView: View {
                 
                 // Ses seçimi
                 if let voices = viewModel.languageToVoicesMap[viewModel.selectedLanguage], !voices.isEmpty {
-                    Text("Available Voices: \(voices.count)")
+                    Text("AVAILABLE_VOICES".localized(with: voices.count))
                     
-                    Picker("Voice", selection: $viewModel.selectedVoice) {
+                    Picker("VOICE", selection: $viewModel.selectedVoice) {
                         ForEach(voices, id: \.name) { voice in
                             Text(voice.name)
                                 .tag(voice.name)
                         }
                     }
                 }
-                
-                // Test butonu
-                Button("Test Selected Voice") {
-                    testSelectedVoice()
-                }
-                .disabled(viewModel.selectedVoice.isEmpty)
-                
-                Button("Refresh Available Languages") {
-                    viewModel.loadAvailableLanguages()
-                }
             }
             
-            Section(header: Text("Language Preferences")) {
-                Text("Select languages to show in Text to Speech")
+            Section(header: Text("LANGUAGE_PREFS")) {
+                Text("SELECT_LANGUAGES_SHOW")
                     .font(.caption)
                     .foregroundColor(.secondary)
                 
@@ -90,7 +80,7 @@ struct VoiceSettingsView: View {
                 }
             }
         }
-        .navigationTitle("Voice Settings")
+        .navigationTitle("VOICE_SETTINGS")
         .onAppear {
             viewModel.loadAvailableLanguages()
             viewModel.loadLanguagePreferences(preferences: languagePreferences)
@@ -107,21 +97,6 @@ struct VoiceSettingsView: View {
             return "\(languageName) (\(languageCode))"
         }
         return languageCode
-    }
-    
-    // Seçilen sesi test etmek için fonksiyon
-    func testSelectedVoice() {
-        if !viewModel.selectedVoice.isEmpty {
-            let utterance = AVSpeechUtterance(string: "This is a test for the selected voice.")
-            
-            // Seçilen ses adına göre AVSpeechSynthesisVoice nesnesini bul
-            if let selectedVoice = viewModel.availableVoices.first(where: { $0.name == viewModel.selectedVoice }) {
-                utterance.voice = selectedVoice
-                
-                let synthesizer = AVSpeechSynthesizer()
-                synthesizer.speak(utterance)
-            }
-        }
     }
 }
 

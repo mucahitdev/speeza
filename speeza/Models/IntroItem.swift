@@ -10,8 +10,8 @@ import SwiftUI
 struct IntroItem: Identifiable {
     var id: String = UUID().uuidString
     var image: String
-    var title: String
-    var description: String
+    var title: LocalizedStringKey
+    var description: LocalizedStringKey
     
     var scale: CGFloat = 1
     var anchor: UnitPoint = .center
@@ -23,14 +23,14 @@ struct IntroItem: Identifiable {
 let inroPageItems: [IntroItem] = [
     .init(
         image: "text.bubble.fill",
-        title: "Save Your Notes\nEasily",
-        description: "Write and save your thoughts\nquickly and efficiently.",
+        title: "INTRO_TITLE_1",
+        description: "INTRO_DESCRIPTION_1",
         scale: 1
     ),
     .init(
         image: "speaker.wave.2.circle.fill",
-        title: "Listen to Your Notes\nin Any Language",
-        description: "Convert your text notes to speech\nin multiple languages.",
+        title: "INTRO_TITLE_2",
+        description: "INTRO_DESCRIPTION_2",
         scale: 0.6,
         anchor: .topLeading,
         offset: -70,
@@ -38,8 +38,8 @@ let inroPageItems: [IntroItem] = [
     ),
     .init(
         image: "globe",
-        title: "Multilingual\nSupport",
-        description: "Write in one language and\nlisten in another.",
+        title: "INTRO_TITLE_3",
+        description: "INTRO_DESCRIPTION_3",
         scale: 0.5,
         anchor: .bottomLeading,
         offset: -60,
@@ -47,8 +47,8 @@ let inroPageItems: [IntroItem] = [
     ),
     .init(
         image: "list.bullet.circle.fill",
-        title: "Organize Your\nNotes",
-        description: "Keep your notes organized\nand easily accessible.",
+        title: "INTRO_TITLE_4",
+        description: "INTRO_DESCRIPTION_4",
         scale: 0.4,
         anchor: .bottomLeading,
         offset: -50,
@@ -56,8 +56,10 @@ let inroPageItems: [IntroItem] = [
     ),
     .init(
         image: "lock.circle.fill",
-        title: "Local Storage\nSecurity",
-        description: "Your notes are securely stored\nlocally on your device.",
+//        title: "Local Storage\nSecurity",
+//        description: "Your notes are securely stored\nlocally on your device.",
+        title: "INTRO_TITLE_5",
+        description: "INTRO_DESCRIPTION_5",
         scale: 0.35,
         anchor: .bottomLeading,
         offset: -50,

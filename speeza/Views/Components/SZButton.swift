@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SZButton: View {
-    let title: String
+    let title: LocalizedStringKey
     let icon: String
     let action: () -> Void
     var width: CGFloat = 120
@@ -32,13 +32,13 @@ struct SZButton: View {
 #Preview {
     HStack {
         SZButton(
-            title: "Play",
+            title: "PLAY",
             icon: "play.fill",
             action: {}
         )
         
         SZButton(
-            title: "Save",
+            title: "SAVE",
             icon: "square.and.arrow.down",
             action: {},
             width: 150

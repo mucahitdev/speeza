@@ -33,9 +33,9 @@ struct EditNoteView: View {
                 }
                 actionButtonsSection
             }
-            .navigationTitle("Edit Note")
+            .navigationTitle("EDIT_NOTE")
             .navigationBarItems(
-                leading: Button("Cancel") {
+                leading: Button("CANCEL") {
                     dismiss()
                 }
             )
@@ -46,14 +46,14 @@ struct EditNoteView: View {
             .onChange(of: groups) { _, newGroups in
                 viewModel.loadGroups(groups: newGroups)
             }
-            .alert("Add New Group", isPresented: $showingAddGroup) {
-                TextField("Group Name", text: $newGroupName)
+            .alert("ADD_NEW_GROUP", isPresented: $showingAddGroup) {
+                TextField("GROUP_NAME", text: $newGroupName)
                 
-                Button("Cancel", role: .cancel) {
+                Button("CANCEL", role: .cancel) {
                     newGroupName = ""
                 }
                 
-                Button("Add") {
+                Button("ADD") {
                     if !newGroupName.isEmpty {
                         let newGroup = NoteGroup(name: newGroupName)
                         modelContext.insert(newGroup)
@@ -62,7 +62,7 @@ struct EditNoteView: View {
                     }
                 }
             } message: {
-                Text("Enter a name for the new group")
+                Text("ENTER_GROUP_NAME")
             }
         }
     }
@@ -70,10 +70,10 @@ struct EditNoteView: View {
     // MARK: - UI Components
     
     private var noteDetailsSection: some View {
-        Section(header: Text("Note Details")) {
+        Section(header: Text("NOTE_DETAILS")) {
             ZStack(alignment: .topLeading) {
                 if viewModel.text.isEmpty {
-                    Text("Enter your note here")
+                    Text("ENTER_NOTE")
                         .foregroundColor(.gray)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 12)
@@ -86,7 +86,7 @@ struct EditNoteView: View {
                         ToolbarItemGroup(placement: .keyboard) {
                             if isTextEditorFocused {
                                 Spacer()
-                                Button("Done") {
+                                Button("DONE") {
                                     isTextEditorFocused = false
                                 }
                             }
@@ -95,16 +95,16 @@ struct EditNoteView: View {
             }
             .frame(minHeight: 40)
             
-            TextField("Title", text: $viewModel.title)
+            TextField("TITLE", text: $viewModel.title)
         }
     }
     
     private var voiceSettingsSection: some View {
         Section(
-            header: Text("Voice Settings"),
+            header: Text("VOICE_SETTINGS"),
             footer: Group {
                 if viewModel.rate < 0.4 || viewModel.rate > 0.6 {
-                    Text("For a more natural speech experience, we recommend keeping the rate between 4 and 6")
+                    Text("RECOMMENDED_SPEECH_RATE")
                         .font(.footnote)
                         .foregroundColor(.secondary)
                 }
@@ -124,7 +124,7 @@ struct EditNoteView: View {
     }
     
     private var languagePicker: some View {
-        Picker("Language", selection: $viewModel.selectedLanguage) {
+        Picker("LANGUAGE", selection: $viewModel.selectedLanguage) {
             ForEach(viewModel.getEnabledLanguages(), id: \.self) { language in
                 Text(getLanguageName(for: language))
                     .tag(language)
@@ -139,7 +139,7 @@ struct EditNoteView: View {
         Group {
             if let voices = viewModel.languageToVoicesMap[viewModel.selectedLanguage],
                !voices.isEmpty {
-                Picker("Voice", selection: $viewModel.selectedVoice) {
+                Picker("VOICE", selection: $viewModel.selectedVoice) {
                     ForEach(voices, id: \.name) { voice in
                         Text(voice.name)
                             .tag(voice.name)
@@ -157,7 +157,7 @@ struct EditNoteView: View {
     
     private var groupSectionHeader: some View {
         HStack {
-            Text("Group")
+            Text("GROUP")
             Spacer()
             Button(action: {
                 showingAddGroup = true
@@ -169,8 +169,8 @@ struct EditNoteView: View {
     }
     
     private var groupPicker: some View {
-        Picker("Group", selection: $viewModel.selectedGroupID) {
-            Text("Uncategorized").tag(nil as UUID?)
+        Picker("GROUP", selection: $viewModel.selectedGroupID) {
+            Text("UNCATEGORIZED").tag(nil as UUID?)
             
             ForEach(groups) { group in
                 Text(group.name).tag(group.id as UUID?)
@@ -190,7 +190,7 @@ struct EditNoteView: View {
     
     private var playButton: some View {
         SZButton(
-            title: viewModel.isPlaying ? "Stop" : "Play",
+            title: viewModel.isPlaying ? "STOP" : "PLAY",
             icon: viewModel.isPlaying ? "stop.fill" : "play.fill",
             action: { viewModel.speak() }
         )
@@ -198,7 +198,7 @@ struct EditNoteView: View {
     
     private var updateButton: some View {
         SZButton(
-            title: "Update",
+            title: "UPDATE",
             icon: "square.and.arrow.up",
             action: {
                 viewModel.updateNote(note, modelContext: modelContext)

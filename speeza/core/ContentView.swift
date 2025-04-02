@@ -24,19 +24,19 @@ struct ContentView: View {
                 TabView(selection: $selectedTab) {
                     AddNoteView()
                         .tabItem {
-                            Label("Add Note", systemImage: "text.bubble")
+                            Label("ADD_NOTE", systemImage: "text.bubble")
                         }
                         .tag(TabScreens.addNote)
                     
                     QuickAccessView()
                         .tabItem {
-                            Label("Quick Access", systemImage: "bolt")
+                            Label("QUICK_ACCESS", systemImage: "bolt")
                         }
                         .tag(TabScreens.quickAccess)
                     
                     SettingsView()
                         .tabItem {
-                            Label("Settings", systemImage: "gear")
+                            Label("SETTINGS", systemImage: "gear")
                         }
                         .tag(TabScreens.settings)
                 }

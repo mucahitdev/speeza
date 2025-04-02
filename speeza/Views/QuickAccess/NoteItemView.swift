@@ -30,7 +30,7 @@ struct NoteItemView: View {
                     .foregroundColor(.secondary)
                 
                 HStack {
-                    Text("Language: \(note.language)")
+                    Text("NOTE_LANGUAGE".localized(with: note.language))
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
@@ -49,14 +49,14 @@ struct NoteItemView: View {
                 Button(role: .destructive) {
                     onDelete(note)
                 } label: {
-                    Label("Delete", systemImage: "trash")
+                    Label("DELETE", systemImage: "trash")
                 }
             }
             .swipeActions(edge: .leading) {
                 Button {
                     showingEditSheet = true
                 } label: {
-                    Label("Edit", systemImage: "pencil")
+                    Label("EDIT", systemImage: "pencil")
                 }
                 .tint(.blue)
             }

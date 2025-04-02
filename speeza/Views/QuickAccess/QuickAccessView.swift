@@ -27,24 +27,24 @@ struct QuickAccessView: View {
             VStack {
                 if notes.isEmpty {
                     ContentUnavailableView(
-                        "No Saved Notes",
+                        "NO_SAVED_NOTES",
                         systemImage: "doc.text.magnifyingglass",
-                        description: Text("Your saved notes will appear here for quick access.")
+                        description: Text("SAVED_NOTES_QUICK_ACCESS")
                     )
                 } else {
                     List {
-                        Section(header: Text("Recent Notes")) {
+                        Section(header: Text("RECENT_NOTES")) {
                             ForEach(viewModel.recentNotes) { note in
                                 NoteItemView(note: note, onDelete: deleteNote)
                             }
                         }
                         
-                        Section(header: Text("Groups")) {
+                        Section(header: Text("GROUPS")) {
                             NavigationLink(destination: UncategorizedNotesView()) {
                                 HStack {
                                     Image(systemName: "tray")
                                         .foregroundColor(.gray)
-                                    Text("Uncategorized")
+                                    Text("UNCATEGORIZED")
                                 }
                             }
                             
@@ -68,14 +68,14 @@ struct QuickAccessView: View {
                                             showingDeleteConfirmation = true
                                         }
                                     } label: {
-                                        Label("Delete", systemImage: "trash")
+                                        Label("DELETE", systemImage: "trash")
                                     }
                                 }
                                 .swipeActions(edge: .leading) {
                                     Button {
                                         showRenameGroup(group: group)
                                     } label: {
-                                        Label("Rename", systemImage: "pencil")
+                                        Label("RENAME", systemImage: "pencil")
                                     }
                                     .tint(.orange)
                                 }
@@ -84,55 +84,55 @@ struct QuickAccessView: View {
                     }
                 }
             }
-            .navigationTitle("Quick Access")
+            .navigationTitle("QUICK_ACCESS")
             .onAppear {
                 viewModel.loadRecentNotes(notes: notes)
                 groupViewModel.loadGroups(groups: groups)
             }
-            .alert("Rename Group", isPresented: $showingRenameGroup) {
-                TextField("Group Name", text: $renameGroupName)
+            .alert("RENAME_GROUP", isPresented: $showingRenameGroup) {
+                TextField("GROUP_NAME", text: $renameGroupName)
                 
-                Button("Cancel", role: .cancel) {
+                Button("CANCEL", role: .cancel) {
                     renameGroupName = ""
                     groupToRename = nil
                 }
                 
-                Button("Rename") {
+                Button("RENAME") {
                     if let group = groupToRename, !renameGroupName.isEmpty {
                         groupViewModel.renameGroup(group: group, newName: renameGroupName, modelContext: modelContext)
                         renameGroupName = ""
                         groupToRename = nil
                     }
                 }
-            } message: {
-                Text("Enter a new name for the group")
             }
             .confirmationDialog(
-                "Delete Group",
+                "DELETE_GROUP",
                 isPresented: $showingDeleteConfirmation,
                 titleVisibility: .visible
             ) {
-                Button("Delete Group Only", role: .destructive) {
+                Button("DELETE_GROUP_ONLY", role: .destructive) {
                     if let group = groupToDelete {
                         groupViewModel.deleteGroup(group, notes: notes, deleteNotes: false, modelContext: modelContext)
                         groupToDelete = nil
                     }
                 }
                 
-                Button("Delete Group and Notes", role: .destructive) {
+                Button("DELETE_GROUP_AND_NOTES", role: .destructive) {
                     if let group = groupToDelete {
                         groupViewModel.deleteGroup(group, notes: notes, deleteNotes: true, modelContext: modelContext)
                         groupToDelete = nil
                     }
                 }
                 
-                Button("Cancel", role: .cancel) {
+                Button("CANCEL", role: .cancel) {
                     groupToDelete = nil
                 }
             } message: {
                 if let group = groupToDelete {
                     let noteCount = groupViewModel.getNoteCount(for: group, notes: notes)
-                    Text("Group '\(group.name)' contains \(noteCount) note\(noteCount == 1 ? "" : "s"). What would you like to do?")
+                    Text(String(format: NSLocalizedString("GROUP_CONTAINS_NOTES", comment: ""), group.name, noteCount))
+            
+                        
                 } else {
                     Text("Select an option")
                 }
@@ -140,19 +140,16 @@ struct QuickAccessView: View {
         }
     }
     
-    // Grup adını değiştirme işlemini başlat
     private func showRenameGroup(group: NoteGroup) {
         groupToRename = group
         renameGroupName = group.name
         showingRenameGroup = true
     }
     
-    // Not silme fonksiyonu
     private func deleteNote(_ note: TextNote) {
         modelContext.delete(note)
         try? modelContext.save()
         
-        // Recent notes listesini güncelle
         viewModel.loadRecentNotes(notes: notes)
     }
 } 
