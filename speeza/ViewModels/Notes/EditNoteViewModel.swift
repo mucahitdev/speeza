@@ -11,6 +11,14 @@ class EditNoteViewModel: ObservableObject {
     @Published var selectedGroupID: UUID?
     @Published var isPlaying: Bool = false
     
+    // Original values to track changes
+    private var originalText: String = ""
+    private var originalTitle: String = ""
+    private var originalLanguage: String = "en-US"
+    private var originalVoice: String = "Default"
+    private var originalRate: Double = 0.5
+    private var originalGroupID: UUID?
+    
     private var speechSynthesizer = AVSpeechSynthesizer()
     private var currentUtterance: AVSpeechUtterance?
     private var availableVoices: [AVSpeechSynthesisVoice] = []
@@ -29,6 +37,34 @@ class EditNoteViewModel: ObservableObject {
         selectedVoice = note.voice
         rate = note.rate
         selectedGroupID = note.groupID
+        
+        // Save original values
+        originalText = note.text
+        originalTitle = note.title
+        originalLanguage = note.language
+        originalVoice = note.voice
+        originalRate = note.rate
+        originalGroupID = note.groupID
+    }
+    
+    // Check if any changes were made
+    var hasChanges: Bool {
+        return text != originalText ||
+               title != originalTitle ||
+               selectedLanguage != originalLanguage ||
+               selectedVoice != originalVoice ||
+               rate != originalRate ||
+               selectedGroupID != originalGroupID
+    }
+    
+    // Reset changes to original values
+    func resetChanges() {
+        text = originalText
+        title = originalTitle
+        selectedLanguage = originalLanguage
+        selectedVoice = originalVoice
+        rate = originalRate
+        selectedGroupID = originalGroupID
     }
     
     private func setupSpeechSynthesizer() {

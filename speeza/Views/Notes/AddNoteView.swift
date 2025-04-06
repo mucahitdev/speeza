@@ -77,9 +77,9 @@ struct AddNoteView: View {
             ZStack(alignment: .topLeading) {
                 if viewModel.text.isEmpty {
                     Text("ENTER_NOTE")
+                        .frame(minHeight: 40)
+                        .padding(.leading, 8)
                         .foregroundColor(.gray)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 12)
                 }
                         
                 TextEditor(text: $viewModel.text)
@@ -207,6 +207,8 @@ struct AddNoteView: View {
             icon: viewModel.isPlaying ? "stop.fill" : "play.fill",
             action: { viewModel.speak() }
         )
+        .disabled(viewModel.text.isBlank)
+        .opacity(viewModel.text.isBlank ? 0.5 : 1)
     }
     
     // Save Button
@@ -220,6 +222,8 @@ struct AddNoteView: View {
                 viewModel.title = ""
             }
         )
+        .disabled(viewModel.text.isBlank)
+        .opacity(viewModel.text.isBlank ? 0.5 : 1)
     }
     
     // Start renaming group
@@ -239,4 +243,11 @@ struct AddNoteView: View {
         }
         return languageCode
     }
-} 
+}
+
+#Preview {
+    AddNoteView()
+        .modelContainer(for: TextNote.self)
+        .modelContainer(for: NoteGroup.self)
+        .modelContainer(for: LanguagePreference.self)
+}

@@ -15,4 +15,8 @@ extension String {
     func localized(with arguments: CVarArg...) -> String {
         return String(format: NSLocalizedString(self, comment: ""), arguments: arguments)
     }
+    
+    var isBlank: Bool {
+        return trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
 }

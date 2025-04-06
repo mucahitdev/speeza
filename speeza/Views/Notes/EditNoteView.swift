@@ -75,8 +75,8 @@ struct EditNoteView: View {
                 if viewModel.text.isEmpty {
                     Text("ENTER_NOTE")
                         .foregroundColor(.gray)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 12)
+                        .frame(minHeight: 40)
+                        .padding(.leading, 8)
                 }
                 
                 TextEditor(text: $viewModel.text)
@@ -182,6 +182,7 @@ struct EditNoteView: View {
         HStack(spacing: 16) {
             Spacer()
             playButton
+            resetButton
             updateButton
             Spacer()
         }
@@ -194,6 +195,17 @@ struct EditNoteView: View {
             icon: viewModel.isPlaying ? "stop.fill" : "play.fill",
             action: { viewModel.speak() }
         )
+        .disabled(viewModel.text.isBlank)
+        .opacity(viewModel.text.isBlank ? 0.5 : 1)
+    }
+    
+    private var resetButton: some View {
+        Button(action: { viewModel.resetChanges() }) {
+            Image(systemName: "arrow.uturn.backward")
+                .font(.system(size: 20))
+                .foregroundColor(viewModel.hasChanges ? Color("szPrimaryColor") : .gray)
+        }
+        .disabled(!viewModel.hasChanges)
     }
     
     private var updateButton: some View {
@@ -205,6 +217,8 @@ struct EditNoteView: View {
                 dismiss()
             }
         )
+        .disabled(!viewModel.hasChanges || viewModel.text.isBlank)
+        .opacity(!viewModel.hasChanges || viewModel.text.isBlank ? 0.5 : 1)
     }
     
     func getLanguageName(for languageCode: String) -> String {
