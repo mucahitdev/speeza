@@ -8,11 +8,16 @@
 import Foundation
 import SwiftData
 import AVFoundation
+import SwiftUI
 
 class AddNoteViewModel: ObservableObject {
     @Published var text: String = ""
     @Published var title: String = ""
-    @Published var selectedLanguage: String = "en-US"
+    @AppStorage("lastSelectedLanguage") var selectedLanguage: String = "en-US" {
+        didSet {
+            updateVoicesForSelectedLanguage()
+        }
+    }
     @Published var selectedVoice: String = "Default"
     @Published var rate: Double = 0.5
     @Published var selectedGroupID: UUID? = nil
@@ -60,7 +65,6 @@ class AddNoteViewModel: ObservableObject {
                 .filter { !$0.isEnabled }
                 .map { $0.languageCode }
             
-            
             // Devre dışı bırakılan dilleri hariç tut, diğer tüm dilleri göster
             availableLanguages = allLanguages.filter { language in
                 !disabledLanguages.contains(language)
@@ -68,7 +72,6 @@ class AddNoteViewModel: ObservableObject {
             
             // Etkin diller, gösterilen dillerdir
             enabledLanguages = availableLanguages
-            
             
             // Eğer seçilen dil etkin değilse, ilk etkin dili seç
             if !enabledLanguages.contains(selectedLanguage), let firstEnabled = enabledLanguages.first {

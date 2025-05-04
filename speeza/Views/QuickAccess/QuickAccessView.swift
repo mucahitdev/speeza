@@ -23,7 +23,7 @@ struct QuickAccessView: View {
     @State private var groupToDelete: NoteGroup? = nil
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 if notes.isEmpty {
                     ContentUnavailableView(

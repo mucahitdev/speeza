@@ -26,7 +26,7 @@ struct AddNoteView: View {
     @FocusState private var isTextEditorFocused: Bool
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 Form {
                     noteDetailsSection
