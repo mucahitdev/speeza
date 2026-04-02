@@ -17,63 +17,56 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section(header: Text("VOICE_SETTINGS")) {
+                Section("VOICE_SETTINGS") {
                     NavigationLink(destination: VoiceSettingsView()) {
-                        VStack {
-                            HStack {
-                                Text("VOICE_LANGUAGE_SETTINGS")
-                            }
-                        }
+                        Label("VOICE_LANGUAGE_SETTINGS", systemImage: "waveform")
                     }
                 }
-                
-                Section(header: Text("APP_INFO")) {
+
+                Section("APP_INFO") {
                     HStack {
                         Text("VERSION")
                         Spacer()
                         Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                     }
-                    
+
                     HStack {
                         Text("BUILD")
                         Spacer()
                         Text(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                     }
                 }
-                
-                Section(header: Text("SUPPORT")) {
+
+                Section("SUPPORT") {
                     Button {
                         if let url = URL(string: "itms-apps://itunes.apple.com/app/id6743993564?action=write-review") {
                             UIApplication.shared.open(url)
                         }
                     } label: {
-                        Label("RATE_APP", systemImage: "star.fill")
-                            .foregroundColor(Color("szPrimaryColor"))
+                        Label("RATE_APP", systemImage: "star")
                     }
-                    
+                    .tint(.primary)
+
                     Button {
                         showingMailComposer = true
                     } label: {
-                        Label("CONTACT_US", systemImage: "envelope.fill")
-                            .foregroundColor(Color("szPrimaryColor"))
+                        Label("CONTACT_US", systemImage: "envelope")
                     }
+                    .tint(.primary)
                 }
-                
-                HStack(alignment: .center) {
+
+                Section {
                     Button {
                         isIntroCompleted = false
                     } label: {
-                        Label(
-                            "Reset Intro",
-                            systemImage: "arrow.counterclockwise"
-                        )
+                        Label("Reset Intro", systemImage: "arrow.counterclockwise")
                     }
+                    .tint(.secondary)
+                    .hSpacing(.center)
                 }
-                .hSpacing(.center)
             }
-            
             .navigationTitle("SETTINGS")
             .sheet(isPresented: $showingMailComposer) {
                 MailComposeView(emailAddress: "infokoksoft@gmail.com")

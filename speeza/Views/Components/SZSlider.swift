@@ -26,7 +26,7 @@ struct SZSlider: View {
                 in: range,
                 step: step
             )
-            .tint(Color("szPrimaryColor"))
+            .tint(.primary)
             .onChange(of: value) { _, _ in
                 let generator = UIImpactFeedbackGenerator(style: .light)
                 generator.impactOccurred()

@@ -13,18 +13,17 @@ struct SZButton: View {
     let action: () -> Void
     var width: CGFloat = 120
     var height: CGFloat = 40
-    
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 8) {
                 Image(systemName: icon)
                 Text(title)
-                    .fontWeight(.bold)
+                    .fontWeight(.semibold)
             }
             .frame(width: width, height: height)
-            .background(Color("szPrimaryColor"))
-            .foregroundColor(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .foregroundStyle(.background)
+            .background(.primary, in: .capsule)
         }
     }
 }

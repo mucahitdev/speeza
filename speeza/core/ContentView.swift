@@ -7,46 +7,35 @@
 
 import SwiftUI
 import SwiftData
-import AVFoundation
 
 enum TabScreens: Int {
-    case addNote, quickAccess, settings
+    case home, settings
 }
-    
 
 struct ContentView: View {
-    @State private var selectedTab: TabScreens = .quickAccess
+    @State private var selectedTab: TabScreens = .home
     @AppStorage("isIntroCompleted") private var isIntroCompleted: Bool = false
 
     var body: some View {
-        ZStack{
+        ZStack {
             if isIntroCompleted {
                 TabView(selection: $selectedTab) {
-                    AddNoteView()
-                        .tabItem {
-                            Label("ADD_NOTE", systemImage: "text.bubble")
-                        }
-                        .tag(TabScreens.addNote)
-                    
-                    QuickAccessView()
-                        .tabItem {
-                            Label("QUICK_ACCESS", systemImage: "bolt")
-                        }
-                        .tag(TabScreens.quickAccess)
-                    
-                    SettingsView()
-                        .tabItem {
-                            Label("SETTINGS", systemImage: "gear")
-                        }
-                        .tag(TabScreens.settings)
+                    Tab("HOME", systemImage: "house", value: .home) {
+                        QuickAccessView()
+                    }
+
+                    Tab("SETTINGS", systemImage: "gear", value: .settings) {
+                        SettingsView()
+                    }
                 }
+                .tint(.primary)
+                .tabViewStyle(.tabBarOnly)
             } else {
                 IntroPageView()
                     .transition(.move(edge: .leading))
             }
         }
-        .animation(.snappy(duration: 0.25,extraBounce: 0), value: isIntroCompleted)
-        
+        .animation(.snappy(duration: 0.25, extraBounce: 0), value: isIntroCompleted)
     }
 }
 

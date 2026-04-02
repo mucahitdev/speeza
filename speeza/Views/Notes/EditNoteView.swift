@@ -13,32 +13,49 @@ struct EditNoteView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Query private var groups: [NoteGroup]
-    
+
     var note: TextNote
-    
+
     @StateObject private var viewModel = EditNoteViewModel()
-    @State private var newGroupName: String = ""
-    @State private var showingAddGroup: Bool = false
-    
-    // Track keyboard focus
+    @State private var newGroupName = ""
+    @State private var showingAddGroup = false
+
     @FocusState private var isTextEditorFocused: Bool
-    
+
     var body: some View {
-        NavigationView {
-            VStack {
-                Form {
-                    noteDetailsSection
-                    voiceSettingsSection
-                    groupSection
-                }
-                actionButtonsSection
+        NavigationStack {
+            Form {
+                noteDetailsSection
+                voiceSettingsSection
+                groupSection
             }
             .navigationTitle("EDIT_NOTE")
-            .navigationBarItems(
-                leading: Button("CANCEL") {
-                    dismiss()
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("CANCEL") {
+                        dismiss()
+                    }
                 }
-            )
+
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("UPDATE") {
+                        viewModel.updateNote(note, modelContext: modelContext)
+                        dismiss()
+                    }
+                    .fontWeight(.semibold)
+                    .disabled(!viewModel.hasChanges || viewModel.text.isBlank)
+                }
+
+                ToolbarItemGroup(placement: .keyboard) {
+                    if isTextEditorFocused {
+                        Spacer()
+                        Button("DONE") {
+                            isTextEditorFocused = false
+                        }
+                    }
+                }
+            }
             .onAppear {
                 viewModel.loadNote(note)
                 viewModel.loadGroups(groups: groups)
@@ -48,11 +65,11 @@ struct EditNoteView: View {
             }
             .alert("ADD_NEW_GROUP", isPresented: $showingAddGroup) {
                 TextField("GROUP_NAME", text: $newGroupName)
-                
+
                 Button("CANCEL", role: .cancel) {
                     newGroupName = ""
                 }
-                
+
                 Button("ADD") {
                     if !newGroupName.isEmpty {
                         let newGroup = NoteGroup(name: newGroupName)
@@ -66,53 +83,34 @@ struct EditNoteView: View {
             }
         }
     }
-    
-    // MARK: - UI Components
-    
+
+    // MARK: - Sections
+
     private var noteDetailsSection: some View {
-        Section(header: Text("NOTE_DETAILS")) {
+        Section("NOTE_DETAILS") {
             ZStack(alignment: .topLeading) {
                 if viewModel.text.isEmpty {
                     Text("ENTER_NOTE")
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.tertiary)
                         .frame(minHeight: 40)
                         .padding(.leading, 8)
                 }
-                
+
                 TextEditor(text: $viewModel.text)
                     .frame(minHeight: 40)
                     .focused($isTextEditorFocused)
-                    .toolbar {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            if isTextEditorFocused {
-                                Spacer()
-                                Button("DONE") {
-                                    isTextEditorFocused = false
-                                }
-                            }
-                        }
-                    }
             }
             .frame(minHeight: 40)
-            
+
             TextField("TITLE", text: $viewModel.title)
         }
     }
-    
+
     private var voiceSettingsSection: some View {
-        Section(
-            header: Text("VOICE_SETTINGS"),
-            footer: Group {
-                if viewModel.rate < 0.4 || viewModel.rate > 0.6 {
-                    Text("RECOMMENDED_SPEECH_RATE")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                }
-            }
-        ) {
+        Section {
             languagePicker
             voicePicker
-            
+
             SZSlider(
                 value: $viewModel.rate,
                 range: 0.1...1,
@@ -120,9 +118,38 @@ struct EditNoteView: View {
                 title: "Speech Rate: \(Int(viewModel.rate * 10))"
             )
             .padding(.vertical, 8)
+
+            HStack {
+                Button {
+                    viewModel.speak()
+                } label: {
+                    Label(
+                        viewModel.isPlaying ? "STOP" : "PLAY",
+                        systemImage: viewModel.isPlaying ? "stop.fill" : "play.fill"
+                    )
+                }
+                .disabled(viewModel.text.isBlank)
+
+                Spacer()
+
+                if viewModel.hasChanges {
+                    Button {
+                        viewModel.resetChanges()
+                    } label: {
+                        Label("RESET", systemImage: "arrow.uturn.backward")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        } header: {
+            Text("VOICE_SETTINGS")
+        } footer: {
+            if viewModel.rate < 0.4 || viewModel.rate > 0.6 {
+                Text("RECOMMENDED_SPEECH_RATE")
+            }
         }
     }
-    
+
     private var languagePicker: some View {
         Picker("LANGUAGE", selection: $viewModel.selectedLanguage) {
             ForEach(viewModel.getEnabledLanguages(), id: \.self) { language in
@@ -134,7 +161,7 @@ struct EditNoteView: View {
             viewModel.updateVoicesForSelectedLanguage()
         }
     }
-    
+
     private var voicePicker: some View {
         Group {
             if let voices = viewModel.languageToVoicesMap[viewModel.selectedLanguage],
@@ -148,84 +175,39 @@ struct EditNoteView: View {
             }
         }
     }
-    
+
     private var groupSection: some View {
         Section(header: groupSectionHeader) {
             groupPicker
         }
     }
-    
+
     private var groupSectionHeader: some View {
         HStack {
             Text("GROUP")
             Spacer()
-            Button(action: {
+            Button {
                 showingAddGroup = true
-            }) {
+            } label: {
                 Image(systemName: "plus.circle")
-                    .foregroundColor(.blue)
+                    .foregroundStyle(.primary)
             }
         }
     }
-    
+
     private var groupPicker: some View {
         Picker("GROUP", selection: $viewModel.selectedGroupID) {
             Text("UNCATEGORIZED").tag(nil as UUID?)
-            
+
             ForEach(groups) { group in
                 Text(group.name).tag(group.id as UUID?)
             }
         }
     }
-    
-    private var actionButtonsSection: some View {
-        HStack(spacing: 16) {
-            Spacer()
-            playButton
-            resetButton
-            updateButton
-            Spacer()
-        }
-        .padding(.bottom, 8)
-    }
-    
-    private var playButton: some View {
-        SZButton(
-            title: viewModel.isPlaying ? "STOP" : "PLAY",
-            icon: viewModel.isPlaying ? "stop.fill" : "play.fill",
-            action: { viewModel.speak() }
-        )
-        .disabled(viewModel.text.isBlank)
-        .opacity(viewModel.text.isBlank ? 0.5 : 1)
-    }
-    
-    private var resetButton: some View {
-        Button(action: { viewModel.resetChanges() }) {
-            Image(systemName: "arrow.uturn.backward")
-                .font(.system(size: 20))
-                .foregroundColor(viewModel.hasChanges ? Color("szPrimaryColor") : .gray)
-        }
-        .disabled(!viewModel.hasChanges)
-    }
-    
-    private var updateButton: some View {
-        SZButton(
-            title: "UPDATE",
-            icon: "square.and.arrow.up",
-            action: {
-                viewModel.updateNote(note, modelContext: modelContext)
-                dismiss()
-            }
-        )
-        .disabled(!viewModel.hasChanges || viewModel.text.isBlank)
-        .opacity(!viewModel.hasChanges || viewModel.text.isBlank ? 0.5 : 1)
-    }
-    
+
     func getLanguageName(for languageCode: String) -> String {
         let locale = Locale(identifier: languageCode)
-        if let languageName = locale.localizedString(
-            forLanguageCode: languageCode
-        ) {
+        if let languageName = locale.localizedString(forLanguageCode: languageCode) {
             return "\(languageName) (\(languageCode))"
         }
         return languageCode
@@ -235,10 +217,10 @@ struct EditNoteView: View {
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(for: TextNote.self, configurations: config)
-    
+
     let note = TextNote(text: "Sample note", title: "Sample title")
     container.mainContext.insert(note)
-    
+
     return EditNoteView(note: note)
         .modelContainer(container)
 }
